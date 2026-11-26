@@ -1,0 +1,460 @@
+TEST123<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abhro Grand Prix — Portfolio</title>
+<meta name="description" content="Abhrojit (Abhro) Saha — Computer Science Honours student at York University. A racing-game portfolio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: arcade racing game — playful, bold, but every fact from the resume is readable.
+IDEA: a top-down circuit; each checkpoint is a level of the portfolio (Garage, City, Lab, Pit, Finish).
+PICTURE: the full track with kerbs, trees, buildings at each level and a red #28 car that drives between them.
+COLOUR: grass green, asphalt grey, red/white kerbs, race red accent; night version for dark mode.
+TYPE: Russo One for game labels and headings, Inter for reading.
+LAYOUT: track (with HUD and pedals) left, level card right; stacked on phones; recruiter mode shows everything.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#eef2ea,#0f1412);--ink:light-dark(#161a1f,#eef1ee);--soft:light-dark(#555c66,#a6aeb0);
+--card:light-dark(#ffffff,#181d1c);--rule:light-dark(#dde2dc,#2a3130);--red:light-dark(#e1122d,#ff4057);
+--grass:light-dark(#62b24c,#1f4a2a);--grass2:light-dark(#57a443,#1b4126);--asph:light-dark(#3a3e46,#2a2d33);
+--tree:light-dark(#2f7d34,#173a20);--tree2:light-dark(#3f9441,#1f4b28);--yellow:#ffc928;--blue:light-dark(#1f6fe0,#5c9bff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.game{font-family:"Russo One",Inter,sans-serif;font-weight:400}
+h1,h2,h3{margin:0;line-height:1.08;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+a{color:inherit}
+
+.top{display:flex;align-items:center;gap:14px;padding:12px max(3vw,14px);flex-wrap:wrap}
+.brand{font-family:"Russo One",sans-serif;font-size:20px;display:flex;align-items:center;gap:10px}
+.flag{width:28px;height:20px;border-radius:3px;background:conic-gradient(var(--ink) 25%,#fff 0 50%,var(--ink) 0 75%,#fff 0) 0 0/10px 10px;border:2px solid var(--ink)}
+.top .sp{flex:1}
+.pill{min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--ink);background:transparent;font-weight:600;font-size:15px}
+.pill.on{background:var(--ink);color:var(--bg)}
+
+.game-wrap{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;padding:0 max(3vw,14px) 24px;max-width:1500px;margin:0 auto;align-items:start}
+.stage{position:relative;background:var(--grass);border-radius:22px;overflow:hidden;border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink)}
+.stage svg{display:block;width:100%;height:auto}
+.hud{position:absolute;left:12px;right:12px;top:12px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+.hud .box{background:var(--card);border:3px solid var(--ink);border-radius:12px;padding:6px 12px;box-shadow:0 3px 0 var(--ink)}
+.hud .lv{font-family:"Russo One",sans-serif;font-size:15px;line-height:1.2}
+.hud .lv small{display:block;font-family:Inter,sans-serif;font-size:12px;color:var(--soft);font-weight:600}
+.speedo{text-align:right;font-family:"Russo One",sans-serif;font-size:26px;line-height:1}
+.speedo small{display:block;font:600 11px Inter,sans-serif;color:var(--soft)}
+.controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;background:var(--card);border-top:4px solid var(--ink)}
+.ctl{min-height:52px;min-width:52px;border-radius:14px;border:3px solid var(--ink);background:var(--card);font-family:"Russo One",sans-serif;font-size:15px;padding:0 16px;box-shadow:0 4px 0 var(--ink);touch-action:manipulation}
+.ctl:active,.ctl.down{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.gas{background:var(--red);color:#fff;min-width:150px;font-size:17px;user-select:none;-webkit-user-select:none}
+.hint{font-size:13px;color:var(--soft);text-align:center;padding:0 12px 12px;background:var(--card)}
+kbd{font:600 12px Inter,sans-serif;border:1px solid var(--rule);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:var(--bg)}
+
+.levels{display:flex;flex-wrap:wrap;gap:8px;padding:4px 2px 12px}
+.lt{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 6px;border-radius:999px;border:2px solid var(--rule);background:var(--card);font-weight:600;font-size:14px}
+.lt b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--rule);font:400 14px "Russo One",sans-serif}
+.lt.done b{background:var(--ink);color:var(--bg)}
+.lt.cur{border-color:var(--red)}.lt.cur b{background:var(--red);color:#fff}
+
+.panel{background:var(--card);border:4px solid var(--ink);border-radius:22px;box-shadow:0 8px 0 var(--ink);padding:clamp(20px,2.4vw,30px);min-height:300px}
+.lvl{display:none;animation:pop .35s ease}
+.lvl.show{display:block}
+body.all .lvl{display:block;padding-bottom:30px;margin-bottom:30px;border-bottom:2px dashed var(--rule)}
+body.all .lvl:last-child{border:0;margin:0;padding:0}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}}
+.tagline{display:inline-flex;align-items:center;gap:8px;font:400 14px "Russo One",sans-serif;color:var(--red);margin-bottom:10px}
+.tagline i{width:12px;height:12px;border-radius:50%;background:var(--red)}
+.lvl h2{font-size:clamp(28px,3vw,38px);margin-bottom:12px}
+.lvl p{margin:0 0 14px;max-width:62ch}
+.muted{color:var(--soft)}
+
+.driver{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;margin:8px 0 18px}
+.helmet{width:96px;height:96px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.fact{border:2px solid var(--rule);border-radius:12px;padding:10px 12px}
+.fact small{display:block;color:var(--soft);font-size:12px;font-weight:600}
+.fact b{font-family:"Russo One",sans-serif;font-weight:400;font-size:18px}
+.stats{display:grid;gap:10px;margin:14px 0 4px}
+.stat{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:center;font-size:14px;font-weight:600}
+.stat .bar{height:14px;border-radius:7px;background:var(--rule);overflow:hidden}
+.stat .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--red),#ff7a3d);border-radius:7px}
+
+.races{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.race{display:grid;grid-template-columns:46px minmax(0,1fr);gap:14px;border:2px solid var(--rule);border-radius:16px;padding:14px}
+.pos{width:46px;height:46px;border-radius:12px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:400 18px "Russo One",sans-serif}
+.race h3{font-size:18px}
+.race .org{color:var(--soft);font-size:14px;margin:2px 0 8px}
+.race .org span{white-space:nowrap}
+.race ul{margin:0;padding-left:18px;font-size:15px}
+.race li{margin-bottom:6px}
+
+.proj{border:2px solid var(--rule);border-radius:16px;padding:16px;margin-bottom:14px}
+.proj h3{font-size:19px;margin-bottom:8px}
+.proj p{font-size:15px}
+.bars{display:grid;gap:8px;margin:10px 0}
+.br{display:grid;grid-template-columns:54px minmax(0,1fr) 62px;gap:10px;align-items:center;font-size:13px;font-weight:600}
+.br .t{height:18px;background:var(--rule);border-radius:5px;overflow:hidden}.br .t i{display:block;height:100%;border-radius:5px;background:var(--ink)}
+.br.r .t i{background:var(--red)}
+.br .v{text-align:right;white-space:nowrap}
+.kpis{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0 12px}
+.kpis div{font-size:12px;color:var(--soft);font-weight:600}.kpis b{display:block;font:400 22px "Russo One",sans-serif;color:var(--ink)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--rule)}
+
+.upg{margin-bottom:16px}
+.upg h3{font-size:16px;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;padding:7px 12px;border-radius:10px;border:2px solid var(--ink);background:var(--card);box-shadow:0 2px 0 var(--ink)}
+.chip::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--red)}
+
+.podium{display:flex;align-items:flex-end;gap:8px;margin:10px 0 18px;max-width:340px}
+.podium div{flex:1;border:3px solid var(--ink);border-bottom:0;border-radius:10px 10px 0 0;text-align:center;font:400 20px "Russo One",sans-serif;padding-top:8px;background:var(--card)}
+.podium .p1{height:96px;background:var(--yellow);color:#161a1f}.podium .p2{height:70px}.podium .p3{height:52px}
+.mail{font:400 clamp(16px,2vw,20px) "Russo One",sans-serif;word-break:break-all;margin:6px 0 14px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 18px;border-radius:12px;border:3px solid var(--ink);background:var(--red);color:#fff;font-family:"Russo One",sans-serif;font-size:15px;text-decoration:none;box-shadow:0 4px 0 var(--ink)}
+.btn.alt{background:var(--card);color:var(--ink)}
+.status{font-size:14px;color:var(--soft);min-height:22px;margin-top:10px}
+
+.toast{position:absolute;left:50%;top:64px;transform:translate(-50%,-20px);background:var(--yellow);color:#161a1f;border:3px solid #161a1f;border-radius:12px;padding:8px 16px;font:400 15px "Russo One",sans-serif;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;font-size:13px;color:var(--soft);padding:10px 16px 28px}
+
+svg .lbl{font:400 17px "Russo One",sans-serif;paint-order:stroke;stroke:#161a1f;stroke-width:5px;fill:#fff;stroke-linejoin:round}
+svg .cp{cursor:pointer}
+svg .cp:hover .bld{filter:brightness(1.12)}
+@media(max-width:1000px){.game-wrap{grid-template-columns:minmax(0,1fr)}.panel{min-height:0}}
+@media(max-width:600px){
+ svg .lbl{display:none}
+ .hud{left:8px;right:8px;top:8px}.hud .box{padding:4px 8px;border-width:2px}
+ .gas{min-width:120px}.ctl{padding:0 12px;font-size:14px}
+ .hud .lv{font-size:13px}.speedo{font-size:20px}
+ .facts{grid-template-columns:minmax(0,1fr)}
+ .race{grid-template-columns:minmax(0,1fr)}.pos{width:40px;height:40px}
+ .stat{grid-template-columns:96px minmax(0,1fr)}
+}
+@media(hover:none){.hint{display:none}}
+@media(prefers-reduced-motion:reduce){.lvl{animation:none}.toast{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+ <div class="brand"><span class="flag"></span>Abhro Grand Prix</div>
+ <span class="sp"></span>
+ <button class="pill" id="allBtn" type="button" aria-pressed="false">Recruiter mode: show everything</button>
+</header>
+
+<main class="game-wrap">
+ <div>
+  <div class="stage" id="stage">
+   <svg id="track" viewBox="30 10 940 640" role="img" aria-label="Race track with five levels: Garage, City Circuit, Project Lab, Pit Stop, Finish Line">
+    <defs>
+     <pattern id="checker" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#fff"/><rect width="6" height="6" fill="#161a1f"/><rect x="6" y="6" width="6" height="6" fill="#161a1f"/></pattern>
+     <g id="tree"><circle cx="4" cy="5" r="17" fill="rgba(0,0,0,.18)"/><circle r="17" fill="var(--tree)"/><circle cx="-4" cy="-5" r="10" fill="var(--tree2)"/></g>
+    </defs>
+    <rect x="30" y="10" width="940" height="640" fill="var(--grass)"/>
+    <g id="mow" opacity=".5"></g>
+    <g id="trees"></g>
+    <path id="kerb" fill="none" stroke="#fff" stroke-width="66" stroke-linejoin="round"/>
+    <path id="kerb2" fill="none" stroke="var(--red)" stroke-width="66" stroke-dasharray="16 16" stroke-linejoin="round"/>
+    <path id="road" fill="none" stroke="var(--asph)" stroke-width="54" stroke-linejoin="round"/>
+    <path id="mid" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2.5" stroke-dasharray="14 16"/>
+    <g id="infield">
+     <text x="540" y="345" text-anchor="middle" class="lbl" style="font-size:30px">ABHRO GRAND PRIX</text>
+     <text x="540" y="375" text-anchor="middle" class="lbl" style="font-size:15px">York University · Toronto · Season 2024–2028</text>
+    </g>
+    <g id="gates"></g>
+    <g id="cps"></g>
+    <g id="trail"></g>
+    <g id="car">
+     <ellipse cx="4" cy="5" rx="27" ry="15" fill="rgba(0,0,0,.3)"/>
+     <rect x="-17" y="-15" width="11" height="6" rx="2" fill="#111"/><rect x="9" y="-15" width="11" height="6" rx="2" fill="#111"/>
+     <rect x="-17" y="9" width="11" height="6" rx="2" fill="#111"/><rect x="9" y="9" width="11" height="6" rx="2" fill="#111"/>
+     <rect x="-28" y="-13" width="6" height="26" rx="2" fill="#161a1f"/>
+     <path d="M-23 -10 H14 Q26 -8 30 0 Q26 8 14 10 H-23 Q-25 0 -23 -10Z" fill="#e1122d" stroke="#161a1f" stroke-width="2"/>
+     <rect x="-23" y="-2.5" width="52" height="5" fill="#fff"/>
+     <ellipse cx="-2" cy="0" rx="8" ry="6" fill="#1b2330" stroke="#fff" stroke-width="1.5"/>
+     <text x="-15" y="-3" font-size="7" fill="#fff" font-family="Russo One" transform="rotate(90 -15 0)" text-anchor="middle">28</text>
+    </g>
+   </svg>
+   <div class="hud">
+    <div class="box lv" id="hudLv">Level 1 / 5<small>The Garage</small></div>
+    <div class="box speedo"><span id="kmh">0</span><small>km/h · Lap <span id="lap">1</span></small></div>
+   </div>
+   <div class="toast" id="toast" role="status"></div>
+   <div class="controls">
+    <button class="ctl" id="prev" type="button" aria-label="Drive back to previous level">◀ Prev</button>
+    <button class="ctl gas" id="gas" type="button">Hold to drive</button>
+    <button class="ctl" id="next" type="button" aria-label="Auto-drive to next level">Next ▶</button>
+   </div>
+   <div class="hint">Hold <kbd>↑</kbd> / <kbd>Space</kbd> or the red pedal to drive. <kbd>→</kbd> auto-drives to the next level. You can also click any building.</div>
+  </div>
+ </div>
+
+ <div>
+  <nav class="levels" id="tabs" aria-label="Levels"></nav>
+  <div class="panel" id="panel" aria-live="polite">
+
+   <section class="lvl show" data-l="0">
+    <div class="tagline"><i></i>Level 1 · The Garage</div>
+    <h2>Driver profile</h2>
+    <div class="driver">
+     <svg class="helmet" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="48" fill="var(--bg)"/>
+      <path d="M18 60 Q18 20 52 18 Q84 18 86 56 L86 70 Q86 78 78 78 L30 78 Q18 78 18 66Z" fill="#e1122d" stroke="#161a1f" stroke-width="4"/>
+      <path d="M46 44 H84 Q86 58 80 62 H50 Q44 62 44 54Z" fill="#1b2330" stroke="#161a1f" stroke-width="3"/>
+      <path d="M22 54 Q40 50 44 30" stroke="#fff" stroke-width="6" fill="none"/>
+      <text x="30" y="72" font-family="Russo One" font-size="14" fill="#fff">28</text>
+     </svg>
+     <div>
+      <h3 style="font-size:24px">Abhrojit "Abhro" Saha</h3>
+      <div class="muted">Computer Science (Honours) · York University, Lassonde School of Engineering</div>
+     </div>
+    </div>
+    <p>I'm a CS student in Toronto who likes data, databases and making events run on time. I build data pipelines and machine learning models, design relational schemas, and lead operations at the venue. I'm looking for software engineering, data and analyst co-ops.</p>
+    <div class="facts">
+     <div class="fact"><small>Team</small><b>York University</b></div>
+     <div class="fact"><small>Car number</small><b>#28 · Class of 2028</b></div>
+     <div class="fact"><small>Home circuit</small><b>Toronto, ON</b></div>
+     <div class="fact"><small>Season</small><b>Jan 2024 – Apr 2028</b></div>
+    </div>
+    <p class="muted" style="font-size:14px">Career stats, all from real work:</p>
+    <div class="stats">
+     <div class="stat">4,600+ records<div class="bar"><i style="width:92%"></i></div></div>
+     <div class="stat">1,500+ hackers<div class="bar"><i style="width:75%"></i></div></div>
+     <div class="stat">50+ pro matches<div class="bar"><i style="width:60%"></i></div></div>
+     <div class="stat">$10K budget<div class="bar"><i style="width:50%"></i></div></div>
+    </div>
+   </section>
+
+   <section class="lvl" data-l="1">
+    <div class="tagline"><i></i>Level 2 · City Circuit</div>
+    <h2>Experience: race results</h2>
+    <ol class="races" id="races"></ol>
+   </section>
+
+   <section class="lvl" data-l="2">
+    <div class="tagline"><i></i>Level 3 · Project Lab</div>
+    <h2>Projects</h2>
+    <div class="proj">
+     <h3>Emergency Response Analysis Across Ontario</h3>
+     <div class="bars" aria-label="Median ambulance response time">
+      <div class="br r"><span>Rural</span><div class="t"><i style="width:81%"></i></div><span class="v">8.1 min</span></div>
+      <div class="br"><span>Urban</span><div class="t"><i style="width:69%"></i></div><span class="v">6.9 min</span></div>
+     </div>
+     <div class="kpis"><div><b>0.82</b>ROC-AUC</div><div><b>77%</b>accuracy vs 65% baseline</div><div><b>+24%</b>since 2015</div></div>
+     <p>I cleaned 4,600+ public records from 56 Ontario paramedic service areas (2015–2023). Rural response times were 18% longer than urban (p &lt; 0.001), and slower where fewer people live. I trained Logistic Regression, Decision Tree and Random Forest models with leakage-safe grouped splits to predict the slowest areas, and showed the results in choropleth maps and a Streamlit dashboard.</p>
+     <div class="tags"><span class="tag">Python</span><span class="tag">Pandas</span><span class="tag">NumPy</span><span class="tag">Scikit-learn</span><span class="tag">GeoPandas</span><span class="tag">SciPy</span><span class="tag">Streamlit</span></div>
+    </div>
+    <div class="proj">
+     <h3>Booking.com: Database Reverse Engineering</h3>
+     <p>I worked out how a large booking platform's core business works and designed a normalized relational schema for it, with entities, relationships and primary/foreign keys in an ER diagram. Then I built it in MySQL and wrote SQL queries for user registration, property listings, reservations and booking management.</p>
+     <div class="tags"><span class="tag">SQL</span><span class="tag">MySQL</span><span class="tag">ERDPlus</span></div>
+    </div>
+   </section>
+
+   <section class="lvl" data-l="3">
+    <div class="tagline"><i></i>Level 4 · Pit Stop</div>
+    <h2>Skills: installed upgrades</h2>
+    <div class="upg"><h3>Engine (languages)</h3><div class="chips" id="u0"></div></div>
+    <div class="upg"><h3>Turbo (frameworks &amp; libraries)</h3><div class="chips" id="u1"></div></div>
+    <div class="upg"><h3>Toolkit (developer tools)</h3><div class="chips" id="u2"></div></div>
+    <div class="upg"><h3>Training laps (coursework)</h3><div class="chips" id="u3"></div></div>
+   </section>
+
+   <section class="lvl" data-l="4">
+    <div class="tagline"><i></i>Level 5 · Finish Line</div>
+    <h2>You made it! Let's work together</h2>
+    <div class="podium" aria-hidden="true"><div class="p2">2</div><div class="p1">1</div><div class="p3">3</div></div>
+    <p>I'm looking for co-op and internship roles in software engineering, data science and analytics. Email is the best way to reach me.</p>
+    <p class="mail">sahaabhroofficial@gmail.com</p>
+    <div class="btns">
+     <button class="btn" id="copy" type="button">Copy email</button>
+     <a class="btn alt" href="https://www.linkedin.com/search/results/people/?keywords=Abhrojit%20Saha" target="_blank" rel="noopener">LinkedIn</a>
+     <button class="btn alt" id="again" type="button">Race again</button>
+    </div>
+    <div class="status" id="status" role="status"></div>
+   </section>
+
+  </div>
+ </div>
+</main>
+<footer>© 2026 Abhrojit Saha · Built as a racing game, because why not</footer>
+
+<script>
+{
+const NS='http://www.w3.org/2000/svg';
+const D="M170 520 C250 590 460 600 520 520 C570 455 640 440 720 480 C810 525 900 500 900 400 C900 300 820 290 760 250 C700 210 760 120 680 95 C600 70 520 110 470 170 C420 230 340 260 280 200 C230 150 120 140 100 250 C85 340 90 450 170 520 Z";
+['kerb','kerb2','road','mid'].forEach(id=>document.getElementById(id).setAttribute('d',D));
+const road=document.getElementById('road');
+const L=road.getTotalLength();
+const pt=s=>road.getPointAtLength(((s%L)+L)%L);
+const samples=[];for(let i=0;i<500;i++){const p=pt(i*L/500);samples.push([p.x,p.y,i*L/500])}
+const nearest=(x,y)=>{let b=1e9,s=0;for(const q of samples){const d=(q[0]-x)**2+(q[1]-y)**2;if(d<b){b=d;s=q[2]}}return s};
+const distTrack=(x,y)=>Math.sqrt(Math.min(...samples.map(q=>(q[0]-x)**2+(q[1]-y)**2)));
+
+/* levels: track anchor + building position */
+const LV=[
+ {name:"The Garage",short:"Profile",at:[170,520],b:[245,440],kind:"garage"},
+ {name:"City Circuit",short:"Experience",at:[900,420],b:[795,385],kind:"city"},
+ {name:"Project Lab",short:"Projects",at:[700,100],b:[600,200],kind:"lab"},
+ {name:"Pit Stop",short:"Skills",at:[380,232],b:[360,108],kind:"pit"},
+ {name:"Finish Line",short:"Contact",at:[96,320],b:[205,300],kind:"finish"}
+];
+LV.forEach((l,i)=>l.s=i===0?0:nearest(...l.at));
+
+/* mowing stripes + trees */
+let mow='';for(let x=30;x<970;x+=60)mow+=`<rect x="${x}" y="10" width="30" height="640" fill="var(--grass2)"/>`;
+document.getElementById('mow').innerHTML=mow;
+let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+const trees=[];let tries=0;
+while(trees.length<38&&tries<3000){tries++;const x=45+rnd()*910,y=25+rnd()*610;
+ if(distTrack(x,y)<62)continue;
+ if(LV.some(l=>Math.hypot(l.b[0]-x,l.b[1]-y)<80))continue;
+ if(x>360&&x<720&&y>310&&y<395)continue;
+ if(trees.some(t=>Math.hypot(t[0]-x,t[1]-y)<38))continue;
+ trees.push([x,y,0.7+rnd()*0.6])}
+document.getElementById('trees').innerHTML=trees.map(t=>`<use href="#tree" transform="translate(${t[0].toFixed(0)} ${t[1].toFixed(0)}) scale(${t[2].toFixed(2)})"/>`).join('');
+
+/* buildings */
+const art={
+ garage:`<rect x="-46" y="-30" width="92" height="62" rx="6" fill="#d9dde3" stroke="#161a1f" stroke-width="3"/><path d="M-52 -30 L0 -58 L52 -30Z" fill="#e1122d" stroke="#161a1f" stroke-width="3"/><rect x="-30" y="-8" width="60" height="40" fill="#5b6470" stroke="#161a1f" stroke-width="3"/><path d="M-30 2 H30 M-30 12 H30 M-30 22 H30" stroke="#8b95a1" stroke-width="2"/>`,
+ city:`<rect x="-52" y="-20" width="30" height="58" fill="#7d8ea3" stroke="#161a1f" stroke-width="3"/><rect x="-18" y="-58" width="36" height="96" fill="#1f6fe0" stroke="#161a1f" stroke-width="3"/><rect x="22" y="-34" width="30" height="72" fill="#ffc928" stroke="#161a1f" stroke-width="3"/><path d="M-10 -46 h8 M4 -46 h8 M-10 -32 h8 M4 -32 h8 M-10 -18 h8 M4 -18 h8 M-10 -4 h8 M4 -4 h8 M-44 -8 h14 M-44 6 h14 M30 -22 h14 M30 -8 h14 M30 6 h14" stroke="#fff" stroke-width="4"/>`,
+ lab:`<rect x="-50" y="-26" width="100" height="56" rx="8" fill="#f2f4f7" stroke="#161a1f" stroke-width="3"/><circle cx="0" cy="-26" r="22" fill="#9fd3ff" stroke="#161a1f" stroke-width="3"/><path d="M-6 -40 v10 l-9 16 h30 l-9 -16 v-10" fill="#62e08a" stroke="#161a1f" stroke-width="2.5"/><rect x="-38" y="0" width="22" height="14" fill="#1f6fe0"/><rect x="16" y="0" width="22" height="14" fill="#1f6fe0"/>`,
+ pit:`<path d="M-56 26 L-44 -24 H44 L56 26Z" fill="#fff" stroke="#161a1f" stroke-width="3"/><path d="M-44 -24 H44 L40 -8 H-40Z" fill="#e1122d" stroke="#161a1f" stroke-width="3"/><rect x="-30" y="0" width="16" height="26" fill="#161a1f"/><rect x="-6" y="0" width="16" height="26" fill="#161a1f"/><rect x="18" y="0" width="16" height="26" fill="#161a1f"/><circle cx="62" cy="18" r="9" fill="#161a1f"/><circle cx="62" cy="0" r="9" fill="#161a1f"/>`,
+ finish:`<rect x="-54" y="-10" width="108" height="40" fill="#d9dde3" stroke="#161a1f" stroke-width="3"/><path d="M-54 -10 L-44 -36 H44 L54 -10Z" fill="#1f6fe0" stroke="#161a1f" stroke-width="3"/><path d="M-46 2 H46 M-46 14 H46" stroke="#8b95a1" stroke-width="3"/><line x1="58" y1="30" x2="58" y2="-56" stroke="#161a1f" stroke-width="4"/><rect x="58" y="-56" width="34" height="24" fill="url(#checker)" stroke="#161a1f" stroke-width="2"/>`
+};
+const cps=document.getElementById('cps'),gates=document.getElementById('gates');
+LV.forEach((l,i)=>{
+ const p=pt(l.s),q=pt(l.s+1),a=Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI;
+ const isFinish=l.kind==='finish';
+ gates.insertAdjacentHTML('beforeend',`<g transform="translate(${p.x} ${p.y}) rotate(${a})"><rect x="-5" y="-27" width="10" height="54" fill="${isFinish||i===0?'url(#checker)':'var(--yellow)'}" opacity="${isFinish||i===0?1:.9}"/></g>`);
+ const lx=l.b[0],ly=l.b[1]+(l.kind==='city'?62:52);
+ cps.insertAdjacentHTML('beforeend',`<g class="cp" data-i="${i}" tabindex="0" role="button" aria-label="Drive to level ${i+1}: ${l.name}">
+  <line x1="${p.x}" y1="${p.y}" x2="${l.b[0]}" y2="${l.b[1]}" stroke="#fff" stroke-width="3" stroke-dasharray="4 6" opacity=".7"/>
+  <g class="bld" transform="translate(${l.b[0]} ${l.b[1]})">${art[l.kind]}</g>
+  <circle cx="${l.b[0]-48}" cy="${l.b[1]-44}" r="17" fill="var(--red)" stroke="#161a1f" stroke-width="3"/>
+  <text x="${l.b[0]-48}" y="${l.b[1]-38}" text-anchor="middle" font-family="Russo One" font-size="17" fill="#fff">${i+1}</text>
+  <text x="${lx}" y="${ly}" text-anchor="middle" class="lbl">${l.short}</text></g>`);
+});
+
+/* content */
+const jobs=[
+ ["Facilities Assistant Lead","Athletics and Recreation, York University","Apr 2025 – Present",["Improved client experience by 75% across 3 athletic venues by leading 6+ facility inspections a week and working with maintenance teams, contractors and vendors.","Led operations for 50+ professional football matches with up to 4,000+ attendees, directing 5 staff and working with York United FC, AFC and Toronto FC II."]],
+ ["Purchasing Executive, Logistics","UofTHacks 14, University of Toronto","Mar 2026 – Present",["Built a logistics tracking dashboard for 10+ orders and delivery dates. It's the team's single source of truth and flags late deliveries before they affect setup.","Manage purchasing with 8+ vendors on a $10,000 budget, supplying an event of 1,500+ participants on time."]],
+ ["Student Representative Lead","EECS Department, Lassonde School of Engineering","Mar 2026 – Aug 2026",["Chosen by the Chair to represent undergraduate CS students in EECS program reviews and curriculum decisions.","Reviewed proposed changes to course structures and learning outcomes with faculty in monthly meetings."]],
+ ["Event Executive","YorkU Data Science Club, York University","Oct 2024 – Aug 2025",["Led social media and promotion for 10+ events, growing engagement by 90% and attendance by 85%.","Secured 2 corporate sponsorships from Red Bull and Papa John's worth $700."]]
+];
+document.getElementById('races').innerHTML=jobs.map((j,i)=>`<li class="race"><div class="pos">P${i+1}</div><div><h3>${j[0]}</h3><div class="org">${j[1]} · <span>${j[2]}</span></div><ul>${j[3].map(b=>`<li>${b}</li>`).join('')}</ul></div></li>`).join('');
+const ups=[["Java","Python","SQL (Postgres)","JavaScript","HTML/CSS","C","RISC-V"],["React","Node.js","Pandas","NumPy","Scikit-learn","GeoPandas"],["VS Code","Visual Studio","IntelliJ","Eclipse","GitHub","Linux","MS Office","Canva","Figma"],["Database Management","Applied Machine Learning","Probability & Statistics","Assembly Language","Introduction to C","Java","Operating Systems"]];
+ups.forEach((u,i)=>document.getElementById('u'+i).innerHTML=u.map(c=>`<span class="chip">${c.replace(/&/g,'&amp;')}</span>`).join(''));
+
+/* game state */
+const car=document.getElementById('car'),trail=document.getElementById('trail');
+const kmh=document.getElementById('kmh'),lapEl=document.getElementById('lap'),hudLv=document.getElementById('hudLv'),toast=document.getElementById('toast');
+const tabs=document.getElementById('tabs');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let pos=0,speed=0,cur=0,gas=false,needRelease=false,auto=null,lap=1,travelled=0,last=0;
+const visited=new Set([0]);
+const VMAX=540,ACC=480,BRAKE=520,COAST=260;
+const fwd=(from,to)=>((to-from)%L+L)%L;
+
+function renderTabs(){
+ tabs.innerHTML=LV.map((l,i)=>`<button type="button" class="lt ${visited.has(i)?'done':''} ${i===cur?'cur':''}" data-i="${i}"><b>${i+1}</b>${l.short}</button>`).join('');
+}
+function show(i){
+ cur=i;visited.add(i);
+ document.querySelectorAll('.lvl').forEach(s=>s.classList.toggle('show',+s.dataset.l===i));
+ hudLv.innerHTML=`Level ${i+1} / 5<small>${LV[i].name}</small>`;
+ renderTabs();
+ if(visited.size===5&&!show.done){show.done=1;flash('All 5 levels unlocked!')}
+}
+function flash(t){toast.textContent=t;toast.classList.add('show');clearTimeout(flash.t);flash.t=setTimeout(()=>toast.classList.remove('show'),2200)}
+function place(){
+ const p=pt(pos),q=pt(pos+2);
+ const a=Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI;
+ car.setAttribute('transform',`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${a.toFixed(1)})`);
+}
+function target(){
+ if(auto!==null)return auto;
+ const n=(cur+1)%LV.length;
+ return LV[n].s;
+}
+function puff(){
+ const p=pt(pos-26);
+ const c=document.createElementNS(NS,'circle');
+ c.setAttribute('cx',p.x+(Math.random()*6-3));c.setAttribute('cy',p.y+(Math.random()*6-3));c.setAttribute('r',4);
+ c.setAttribute('fill','#fff');c.setAttribute('opacity','.6');trail.appendChild(c);
+ let k=0;const f=()=>{k++;c.setAttribute('r',4+k*.35);c.setAttribute('opacity',(.6-k*.025).toFixed(2));if(k<24)requestAnimationFrame(f);else c.remove()};requestAnimationFrame(f);
+}
+function arrive(i){
+ pos=LV[i].s;speed=0;auto=null;needRelease=gas;
+ if(i===0&&travelled>L*.5){lap++;lapEl.textContent=lap;travelled=0;flash('Lap '+(lap-1)+' complete!')}
+ show(i);
+ if(innerWidth<1000&&!document.body.classList.contains('all'))flash(LV[i].short+' unlocked, scroll down');
+}
+function tick(t){
+ const dt=Math.min(.05,(t-last)/1000||0);last=t;
+ const driving=(gas&&!needRelease)||auto!==null;
+ const tgt=target();
+ const rem=fwd(pos,tgt)||(driving&&auto===null?L:0);
+ if(driving){
+  const cap=Math.min(VMAX,Math.sqrt(2*BRAKE*Math.max(rem,0))+30);
+  speed=speed<cap?Math.min(cap,speed+ACC*dt):Math.max(cap,speed-BRAKE*dt);
+ }else speed=Math.max(0,speed-COAST*dt);
+ if(speed>0){
+  const step=speed*dt;
+  if(driving&&step>=rem){
+   travelled+=rem;
+   const i=LV.findIndex(l=>Math.abs(l.s-tgt)<.5);
+   arrive(i);
+  }else{pos=(pos+step)%L;travelled+=step}
+  if(speed>140&&Math.random()<.35)puff();
+ }
+ kmh.textContent=Math.round(speed*.62);
+ place();
+ requestAnimationFrame(tick);
+}
+function driveTo(i){
+ if(i===cur&&Math.abs(fwd(pos,LV[i].s))<1){show(i);return}
+ if(reduce){pos=LV[i].s;arrive(i);place();return}
+ auto=LV[i].s;
+}
+const gasBtn=document.getElementById('gas');
+const gasOn=e=>{e&&e.preventDefault();if(!gas){gas=true;gasBtn.classList.add('down')}};
+const gasOff=()=>{gas=false;needRelease=false;gasBtn.classList.remove('down')};
+gasBtn.addEventListener('pointerdown',e=>{gasBtn.setPointerCapture?.(e.pointerId);gasOn(e)});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>gasBtn.addEventListener(ev,gasOff));
+gasBtn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();driveTo((cur+1)%5)}});
+gasBtn.addEventListener('contextmenu',e=>e.preventDefault());
+document.getElementById('next').addEventListener('click',()=>driveTo((cur+1)%5));
+document.getElementById('prev').addEventListener('click',()=>{const i=(cur+4)%5;pos=LV[i].s;speed=0;auto=null;show(i);place()});
+document.getElementById('again').addEventListener('click',()=>{document.getElementById('stage').scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});driveTo(0)});
+tabs.addEventListener('click',e=>{const b=e.target.closest('.lt');if(b)driveTo(+b.dataset.i)});
+cps.addEventListener('click',e=>{const g=e.target.closest('.cp');if(g)driveTo(+g.dataset.i)});
+cps.addEventListener('keydown',e=>{const g=e.target.closest('.cp');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();driveTo(+g.dataset.i)}});
+addEventListener('keydown',e=>{
+ if(e.target.closest('input,textarea,a,.lt,.cp,.btn,.pill'))return;
+ if(e.key==='ArrowUp'||e.key==='w'||e.key===' ')gasOn(e)
+ else if(e.key==='ArrowRight'){e.preventDefault();driveTo((cur+1)%5)}
+ else if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('prev').click()}
+});
+addEventListener('keyup',e=>{if(e.key==='ArrowUp'||e.key==='w'||e.key===' ')gasOff()});
+addEventListener('blur',gasOff);
+
+const allBtn=document.getElementById('allBtn');
+allBtn.addEventListener('click',()=>{const on=document.body.classList.toggle('all');allBtn.classList.toggle('on',on);allBtn.setAttribute('aria-pressed',on);allBtn.textContent=on?'Back to game view':'Recruiter mode: show everything';if(on)document.getElementById('panel').scrollIntoView({behavior:reduce?'auto':'smooth'})});
+
+const status=document.getElementById('status');
+document.getElementById('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText('sahaabhroofficial@gmail.com');status.textContent='Email copied.'}catch(e){status.textContent='Copy blocked here. The address is shown above.'}});
+
+renderTabs();place();requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
